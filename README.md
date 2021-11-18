@@ -1,4 +1,4 @@
-Setup partitions (from https://github.com/ners/nixos)
+# Setup partitions
 ```
 sudo su
 sgdisk --zap-all -o \
@@ -26,4 +26,10 @@ chattr +C /mnt/swap/swapfile
 fallocate /mnt/swap/swapfile -l4g
 mkswap /mnt/swap/swapfile
 swapon /mnt/swap/swapfile
+```
+
+# Mount filesys for livecd
+```
+sudo su
+curl https://github.com/Abstract-Programming/nixos/raw/main/mnt.sh --output mnt.sh && sh mnt.sh
 ```
