@@ -1,5 +1,3 @@
-NOTE: Using X11 over Wayland due to driver issues. I'll fix it at some point.
-
 # Setup partitions
 ```
 sudo su
