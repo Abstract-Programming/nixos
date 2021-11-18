@@ -8,9 +8,12 @@
   imports =
     [ # Include the results of the hardware scan.
       ./btrfs.nix
-      ./graphical.nix
       ./boot.nix
       ./hardware-configuration.nix
+      # ./audio.nix
+      # ./nvidia.nix
+      ./graphical.nix
+      <home-manager/nixos>
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -68,17 +71,23 @@
   users = {
     defaultUserShell = pkgs.zsh;
     users.akat = {
+      initialHashedPassword = "$6$vcOQuFkT.XCtF0kP$LbESHYg2/viILQJlNWT3hUU9LnowsHtSymjuW4oDlSuZR.CI9WW0T.qX5jhK03Ys5LDK5UgYv48KBHtaOpIsH1";
       isNormalUser = true;
-      createGome = true;
+      createHome = true;
       extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     };
+  };
+  home-manager.users.akat = { pkgs, ... }: {
+    home.packages = [ pkgs.atool pkgs.httpie ];
+    programs.bash.enable = true;
   };
   environment.shells = [ pkgs.zsh ];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
+  nixpkgs.config.allowUnfree = true;
   environment.systemPackages = with pkgs; [
-    vim
+    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     htop
     firefox
@@ -103,6 +112,11 @@
     tree
     usbutils
     curl
+    discord
+    flameshot
+    idea.idea-ultimate
+    obs-studio
+    google-cloud-sdk
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
