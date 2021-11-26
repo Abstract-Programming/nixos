@@ -2,9 +2,17 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ inputs, config, pkgs, lib, callPackage, options, ... }:
 
-{
+with pkgs;
+let unstable = import <unstable> {
+  config.allowUnfree = true;
+};
+in {
+
+  # boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = unstable.linuxPackages_latest;
+
   imports =
     [ # Include the results of the hardware scan.
       ./btrfs.nix
@@ -78,7 +86,7 @@
     };
   };
   home-manager.users.akat = { pkgs, ... }: {
-    home.packages = [ pkgs.atool pkgs.httpie ];
+    home.packages = [ pkgs.atool pkgs.httpie pkgs.libreoffice pkgs.starship ];
     programs.bash.enable = true;
   };
   environment.shells = [ pkgs.zsh ];
@@ -118,6 +126,12 @@
     obs-studio
     google-cloud-sdk
   ];
+
+  #nix-direnv
+  nix.extraOptions = ''
+    keep-outputs = true
+    keep-derivations = true
+  '';
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
