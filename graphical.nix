@@ -1,5 +1,15 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
+
+# let
+#  nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
+#    export __NV_PRIME_RENDER_OFFLOAD=1
+#    export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+#    export __GLX_VENDOR_LIBRARY_NAME=nvidia
+#    export __VK_LAYER_NV_optimus=NVIDIA_only
+#    exec -a "$0" "$@"
+#  '';
+#in
 {
   environment.systemPackages = with pkgs; [
     evince
@@ -13,9 +23,18 @@
     libappindicator
     libimobiledevice
     neovim-qt
-    vim
   ];
-
+  # Nvidia specific stuff, need beta version for wayland support (470+).
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.beta;
+  hardware.nvidia.modesetting.enable = true;
+  hardware.nvidia.prime = {
+    sync.enable = true;
+    # Bus ID of the Intel GPU.
+    intelBusId = "PCI:0:2:0";
+    # Bus ID of the NVIDIA GPU.
+    nvidiaBusId = "PCI:1:0:0";
+  };  
+  
   environment.variables = {
     VISUAL = "vim";
     MOZ_ENABLE_WAYLAND = "1";
@@ -87,13 +106,13 @@
   services = {
     xserver = {
       enable = true;
-      videoDrivers = [ "nouveau" ];
+      # videoDrivers = [ "nvidiaBeta" ];
       xkbOptions = "caps:escape";
       libinput.enable = true;
       displayManager = {
         gdm = {
           enable = true;
-          wayland = true;
+          nvidiaWayland = true;
         };
       };
       desktopManager.gnome.enable = true;
@@ -118,13 +137,13 @@
     flatpak.enable = true;
     fprintd.enable = true;
     fwupd.enable = true;
-    geoclue2.enable = true;
-    localtime.enable = true;
-    printing.enable = true;
-    redshift.enable = true;
+    geoclue2.enable = false;
+    localtime.enable = false;
+    printing.enable = false;
+    redshift.enable = false;
     usbmuxd.enable = true;
   };
-  location.provider = "geoclue2";
+  # location.provider = "geoclue2";
 
   programs = {
     dconf.enable = true;
